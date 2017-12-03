@@ -10,7 +10,6 @@ import lombok.Getter;
  * Response list DTO to use when returning a list of results with the count
  * @author cedric
  *
- * @param <T>
  */
 @Getter
 @AllArgsConstructor

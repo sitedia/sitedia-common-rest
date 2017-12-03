@@ -14,23 +14,26 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
- * DTO / Entity CRUD mapper
+ * Abstract CRUD mapper between DTOs and entities. Based on Orika.
  * 
- * @author cedric
+ * @author sitedia
  *
- * @param <C>
- * @param <R>
- * @param <U>
- * @param <E>
- * @param <I>
+ * @param <C> DTO to use for creation
+ * @param <R> DTO to use for read and list
+ * @param <U> DTO to use for update
+ * @param <E> Entity to use (necessary to specify the service to use)
+ * @param <I> Primary key class of the entity
  */
 public abstract class AbstractCrudMapper<C, R, U, E, I> {
+
+    protected MapperFactory mapperFactory;
 
     @Autowired
     protected DaoManager daoManager;
 
-    protected MapperFactory mapperFactory;
-
+    /**
+     * Default constructor
+     */
     public AbstractCrudMapper() {
         mapperFactory = new DefaultMapperFactory.Builder().build();
 
@@ -101,16 +104,38 @@ public abstract class AbstractCrudMapper<C, R, U, E, I> {
         return result;
     }
 
+    /**
+     * Apply conversions on the request parameters: Class changes, n-n relations
+     * management, ...
+     * @param params
+     * @return
+     */
     public Map<String, Object> convertParams(Map<String, Object> params) {
         return params;
     }
 
+    /**
+     * Return the DTO class for creation
+     * @return
+     */
     protected abstract Class<C> getCreationDTOClass();
 
+    /**
+     * Return the DTO class for read and list
+     * @return
+     */
     protected abstract Class<R> getDTOClass();
 
+    /**
+     * Return the DTO class for update
+     * @return
+     */
     protected abstract Class<U> getUpdateDTOClass();
 
+    /**
+     * Return the entity class for mapping
+     * @return
+     */
     protected abstract Class<E> getEntityClass();
 
 }

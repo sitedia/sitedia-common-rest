@@ -41,7 +41,12 @@ public class SecurityFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
 
         // Set response headers
-        setResponseHeaders(response);
+        response.setHeader("Access-Control-Allow-Origin", allowOrigin);
+        response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "x-total-count, Set-Cookie");
+        response.setHeader("Access-Control-Expose-Headers", "x-total-count, Set-Cookie");
 
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
@@ -53,26 +58,23 @@ public class SecurityFilter implements Filter {
         logAccess(response, request);
     }
 
-    private void setResponseHeaders(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", allowOrigin);
-        response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "x-total-count, Set-Cookie");
-        response.setHeader("Access-Control-Expose-Headers", "x-total-count, Set-Cookie");
-    }
-
     private void logAccess(HttpServletResponse response, HttpServletRequest request) {
         int responseStatus = response.getStatus();
         String incomingRequest = request.getMethod() + " " + request.getRequestURL() + " => " + responseStatus;
-        if (responseStatus == 200 || responseStatus == 404) {
-            Logger.getLogger("tomcat.access").info(incomingRequest);
-        } else if (responseStatus >= 300 && responseStatus <= 399) {
-            Logger.getLogger("tomcat.redirect").info(incomingRequest);
-        } else if (responseStatus >= 400 && responseStatus <= 499) {
-            Logger.getLogger("tomcat.warning").info(incomingRequest);
-        } else {
-            Logger.getLogger("tomcat.error").info(incomingRequest);
+        Integer responseType = responseStatus / 100;
+
+        switch (responseType) {
+        case 2:
+            Logger.getLogger("endpoint.success").info(incomingRequest);
+            break;
+        case 3:
+            Logger.getLogger("endpoint.redirect").info(incomingRequest);
+            break;
+        case 4:
+            Logger.getLogger("endpoint.warning").info(incomingRequest);
+            break;
+        default:
+            Logger.getLogger("endpoint.error").info(incomingRequest);
         }
     }
 

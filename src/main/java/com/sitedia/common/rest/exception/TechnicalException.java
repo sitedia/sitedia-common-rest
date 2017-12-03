@@ -3,8 +3,8 @@ package com.sitedia.common.rest.exception;
 import java.io.IOException;
 
 /**
- * Main exception for the application
- * @author cedric
+ * Unmanaged exceptions thrown by the application.
+ * @author sitedia
  *
  */
 public class TechnicalException extends IOException {

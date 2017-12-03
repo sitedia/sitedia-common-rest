@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * SHA 512 encoder
- * @author cedric
+ * @author sitedia
  *
  */
 public final class Sha512PasswordEncoder implements PasswordEncoder {

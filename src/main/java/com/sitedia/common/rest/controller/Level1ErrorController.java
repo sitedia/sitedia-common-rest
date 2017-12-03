@@ -81,7 +81,8 @@ public class Level1ErrorController {
         Logger.getLogger("endpoint.AccessDenied").warning(e.getMessage());
         logger.log(Level.FINE, e.getMessage(), e);
 
-        ErrorDTO error = new ErrorDTO("ACCESS_DENIED", messageSource.getMessage("endpoint.accessDenied", null, LocaleContextHolder.getLocale()));
+        ErrorDTO error = new ErrorDTO("ACCESS_DENIED",
+                messageSource.getMessage("sitedia.commonRest.endpoint.accessDenied", null, LocaleContextHolder.getLocale()));
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
@@ -96,7 +97,8 @@ public class Level1ErrorController {
         Logger.getLogger("error.Internal").severe(e.getMessage());
         logger.log(Level.SEVERE, e.getMessage(), e);
 
-        ErrorDTO error = new ErrorDTO("INTERNAL", messageSource.getMessage("endpoint.internalError", null, LocaleContextHolder.getLocale()));
+        ErrorDTO error = new ErrorDTO("INTERNAL",
+                messageSource.getMessage("sitedia.commonRest.endpoint.internalError", null, LocaleContextHolder.getLocale()));
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

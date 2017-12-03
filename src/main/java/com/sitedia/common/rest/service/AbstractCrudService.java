@@ -2,7 +2,6 @@ package com.sitedia.common.rest.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.transaction.Transactional;
 
@@ -13,28 +12,24 @@ import com.sitedia.common.rest.dto.ResponseListDTO;
 import com.sitedia.common.rest.exception.BusinessException;
 import com.sitedia.common.rest.exception.TechnicalException;
 import com.sitedia.common.rest.mapper.AbstractCrudMapper;
-import com.sitedia.common.rest.utils.JsonUtils;
 
 /**
- * CRUD service
+ * Abstract CRUD service
  * 
- * @author cedric
- *
- * @param <C>
- * @param <R>
- * @param <U>
- * @param <E>
- * @param <I>
+ * @author sitedia
+ * @param <C> DTO to use for creation
+ * @param <R> DTO to use for read and list
+ * @param <U> DTO to use for update
+ * @param <E> Entity to use (necessary to specify the service to use)
+ * @param <I> Primary key class of the entity
  */
 public abstract class AbstractCrudService<C, R, U, E, I> {
-
-    protected Logger logger = Logger.getLogger(getClass().getName());
 
     @Autowired
     protected DaoManager daoManager;
 
     /**
-     * Create the entity in database
+     * Creates the entity in database
      * 
      * @param creationDTO
      * @return
@@ -44,17 +39,16 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
     @Transactional
     public R create(C creationDTO) throws BusinessException, TechnicalException {
         E entity = getMapper().fromCreationDTO(creationDTO);
-        E created = daoManager.create(getEntityClass(), entity, getId());
+        E created = daoManager.create(getEntityClass(), entity, getId(creationDTO));
 
-        // Perform custom code if necesary
+        // Perform custom code if necessary
         internalPostCreate(creationDTO, created);
 
-        logger.info(String.format("%s created: %s", getEntityClass(), JsonUtils.toString(creationDTO)));
         return getMapper().toDTO(created);
     }
 
     /**
-     * gets the entity
+     * Gets the entity from database
      * 
      * @param id
      * @return
@@ -64,17 +58,11 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
     @Transactional
     public R get(I id) throws BusinessException, TechnicalException {
         E entity = daoManager.get(getEntityClass(), id);
-
-        // Check that the page exists
-        if (entity == null) {
-            throw new BusinessException("Page not found");
-        }
-
-        return getMapper().toDTO(entity);
+        return entity != null ? getMapper().toDTO(entity) : null;
     }
 
     /**
-     * Update
+     * Updates the entity in database
      * 
      * @param updateDTO
      * @param id
@@ -90,12 +78,11 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
         // Perform custom code if necesary
         internalPostUpdate(id, updateDTO, updated);
 
-        logger.info(String.format("%s udpated: %s", getEntityClass(), JsonUtils.toString(updated)));
         return getMapper().toDTO(updated);
     }
 
     /**
-     * Delete
+     * Deletes the entity in database
      * 
      * @param id
      * @throws BusinessException
@@ -103,12 +90,11 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      */
     @Transactional
     public void delete(I id) throws BusinessException, TechnicalException {
-        logger.info(String.format("%s deleted: %s", getEntityClass(), JsonUtils.toString(id)));
         daoManager.delete(getEntityClass(), id);
     }
 
     /**
-     * List
+     * Lists entities in database
      * 
      * @param params
      * @return
@@ -117,23 +103,56 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      */
     @Transactional
     public ResponseListDTO<R> list(Map<String, Object> params) throws BusinessException, TechnicalException {
+
+        // Convert params before filtering
         Map<String, Object> convertedParams = getMapper().convertParams(params);
+
+        // List objects
         List<E> list = daoManager.list(getEntityClass(), convertedParams);
+
+        // Retrieve the total number of elements
         Long count = daoManager.count(getEntityClass(), convertedParams);
+
+        // Return result
         List<R> result = getMapper().toDTOsList(list);
         return new ResponseListDTO<>(result, count);
     }
 
+    /**
+     * Post process for creation, inside the transaction
+     * @param creationDTO
+     * @param created
+     * @throws BusinessException
+     */
     protected void internalPostCreate(C creationDTO, E created) throws BusinessException {
     }
 
+    /**
+     * Post process for update, inside the transaction
+     * @param id
+     * @param updateDTO
+     * @param updated
+     * @throws BusinessException
+     */
     protected void internalPostUpdate(I id, U updateDTO, E updated) throws BusinessException {
     }
 
+    /**
+     * Return the entity class to manage
+     * @return
+     */
     protected abstract Class<E> getEntityClass();
 
+    /**
+     * Returns the mapper to use
+     * @return
+     */
     protected abstract AbstractCrudMapper<C, R, U, E, I> getMapper();
 
-    protected abstract I getId();
+    /**
+     * Returns the primary key of the given creationDTO, in order to prevent
+     * duplicates in database
+     */
+    protected abstract I getId(C creationDTO);
 
 }

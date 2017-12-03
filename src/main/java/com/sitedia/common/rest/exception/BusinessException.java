@@ -3,8 +3,8 @@ package com.sitedia.common.rest.exception;
 import java.io.IOException;
 
 /**
- * Main exception for the application
- * @author cedric
+ * Managed exceptions thrown by the developer. To be used for business errors.
+ * @author sitedia
  *
  */
 public class BusinessException extends IOException {
