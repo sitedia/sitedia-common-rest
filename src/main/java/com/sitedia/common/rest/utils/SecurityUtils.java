@@ -61,7 +61,8 @@ public class SecurityUtils {
      * @param authentication
      * @return
      */
-    public static String getUsername(Authentication authentication) {
+    public static String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.getName() != null ? authentication.getName() : null;
     }
 
