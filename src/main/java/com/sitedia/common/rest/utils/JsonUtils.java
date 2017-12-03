@@ -2,6 +2,7 @@ package com.sitedia.common.rest.utils;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitedia.common.rest.exception.TechnicalException;
 
@@ -33,6 +34,16 @@ public final class JsonUtils {
         } catch (IOException e) {
             throw new TechnicalException(e);
         }
+    }
+
+    /**
+     * Convert the JSON string to a JSON node
+     * @param jsonString
+     * @return
+     * @throws TechnicalException
+     */
+    public static JsonNode toJsonNode(Object value) throws TechnicalException {
+        return mapper.valueToTree(value);
     }
 
 }
