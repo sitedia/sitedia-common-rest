@@ -53,11 +53,14 @@ public class Level2ErrorController implements org.springframework.boot.autoconfi
             Map<String, Object> errors = errorAttributes.getErrorAttributes(requestAttributes, true);
             String message = new ObjectMapper().writeValueAsString(errors);
 
-            // Specific log for monitoring
-            Logger.getLogger("error.critical").severe(message);
-            logger.severe(message);
-
-            return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>", HttpStatus.INTERNAL_SERVER_ERROR);
+            // Return a basic page with the header
+            if (errors.get("error") != null && errors.get("error").equals("Not Found")) {
+                Logger.getLogger("endpoint.404").info(message);
+                return new ResponseEntity<>("<h1>Forbidden</h1>", HttpStatus.FORBIDDEN);
+            } else {
+                Logger.getLogger("endpoint.critical").severe(message);
+                return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
         } catch (Exception e) {
 

@@ -21,9 +21,8 @@ public class I18nConfiguration extends WebMvcConfigurerAdapter {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("messages");
         messageSource.setDefaultEncoding("UTF-8");
-        messageSource.getBasenameSet().add("classpath:CommonRestMessages");
+        messageSource.addBasenames("messages", "com.sitedia.common.rest.messages");
         return messageSource;
     }
 

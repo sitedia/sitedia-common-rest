@@ -1,8 +1,8 @@
 package com.sitedia.common.rest.controller;
 
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +12,9 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,14 +79,16 @@ public class Level1ErrorController {
      */
     @ExceptionHandler(value = { AccessDeniedException.class })
     public ResponseEntity<ErrorDTO> handleAccessDeniedException(AccessDeniedException e) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean authenticated = authentication.getName() != null && !authentication.getName().equals("anonymousUser");
 
         // Specific log for monitoring
         Logger.getLogger("endpoint.AccessDenied").warning(e.getMessage());
         logger.log(Level.FINE, e.getMessage(), e);
 
         ErrorDTO error = new ErrorDTO("ACCESS_DENIED",
-                messageSource.getMessage("sitedia.commonRest.endpoint.accessDenied", null, LocaleContextHolder.getLocale()));
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+                messageSource.getMessage("sitedia.commonRest.endpoint.accessDenied", null, Locale.getDefault()));
+        return new ResponseEntity<>(error, authenticated ? HttpStatus.FORBIDDEN : HttpStatus.UNAUTHORIZED);
     }
 
     /**
