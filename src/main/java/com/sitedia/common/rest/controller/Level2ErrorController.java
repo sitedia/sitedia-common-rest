@@ -21,20 +21,23 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Error controller
- * @author cedric
- *
+ * Second level of errors thrown by controller. First level failed, so we reply
+ * with a simple message
+ * 
+ * @author sitedia
  */
 @RestController
 public class Level2ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
 
     private static final String PATH = "/error";
 
+    private static Logger logger = Logger.getLogger(Level2ErrorController.class.getName());
+
     @Autowired
     private ErrorAttributes errorAttributes;
 
     /**
-     * Format all errors
+     * Returns a simple message to the user
      * @param request
      * @param response
      * @return
@@ -44,22 +47,25 @@ public class Level2ErrorController implements org.springframework.boot.autoconfi
     @ResponseBody
     public ResponseEntity<String> error(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
+
             // Extract message
             RequestAttributes requestAttributes = new ServletRequestAttributes(request);
             Map<String, Object> errors = errorAttributes.getErrorAttributes(requestAttributes, true);
+            String message = new ObjectMapper().writeValueAsString(errors);
 
-            // Return a basic page with the header
-            if (errors.get("error") != null && errors.get("error").equals("Not Found")) {
-                Logger.getLogger("error.404").info(String.format("Page not found: %s", errors.get("path")));
-                return new ResponseEntity<>("<h1>Page non trouvée</h1>", HttpStatus.NOT_FOUND);
-            } else {
-                String message = new ObjectMapper().writeValueAsString(errors);
-                Logger.getLogger("error.500").severe(String.format("Internal error: %s", message));
-                return new ResponseEntity<>("<h1>Site en cours de maintenance</h1>", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            // Specific log for monitoring
+            Logger.getLogger("error.critical").severe(message);
+            logger.severe(message);
+
+            return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>", HttpStatus.INTERNAL_SERVER_ERROR);
+
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
-            return new ResponseEntity<String>("Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
+
+            // Specific log for monitoring
+            Logger.getLogger("error.critical").severe(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+
+            return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

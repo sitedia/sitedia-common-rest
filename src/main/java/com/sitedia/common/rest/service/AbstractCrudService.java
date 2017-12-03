@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sitedia.common.rest.dao.DAOManager;
+import com.sitedia.common.rest.dao.DaoManager;
 import com.sitedia.common.rest.dto.ResponseListDTO;
 import com.sitedia.common.rest.exception.BusinessException;
 import com.sitedia.common.rest.exception.TechnicalException;
@@ -31,7 +31,7 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
     protected Logger logger = Logger.getLogger(getClass().getName());
 
     @Autowired
-    protected DAOManager daoManager;
+    protected DaoManager daoManager;
 
     /**
      * Create the entity in database
@@ -44,7 +44,7 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
     @Transactional
     public R create(C creationDTO) throws BusinessException, TechnicalException {
         E entity = getMapper().fromCreationDTO(creationDTO);
-        E created = daoManager.create(getEntityClass(), entity, null, null);
+        E created = daoManager.create(getEntityClass(), entity, getId());
 
         // Perform custom code if necesary
         internalPostCreate(creationDTO, created);
@@ -133,5 +133,7 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
     protected abstract Class<E> getEntityClass();
 
     protected abstract AbstractCrudMapper<C, R, U, E, I> getMapper();
+
+    protected abstract I getId();
 
 }

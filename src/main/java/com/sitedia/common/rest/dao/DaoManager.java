@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -29,11 +28,9 @@ import com.sitedia.common.rest.exception.BusinessException;
  * @author cedric
  *
  */
-@Component
 @Lazy
-public class DAOManager {
-
-    private static final Logger daoPersistLogger = Logger.getLogger("dao.persist");
+@Component
+public class DaoManager {
 
     private static final int DEFAULT_MAX_ELEMENTS = 20;
 
@@ -44,73 +41,72 @@ public class DAOManager {
     private MessageSource messageSource;
 
     /**
-     * Create the entity in database
+     * Creates the entity in database
      * @param entityClass
-     * @param objectEntity
+     * @param entity
      * @param primaryKey
-     * @param alreadyExistsKey
      * @return
      * @throws BusinessException
      */
-    public <T> T create(Class<? extends T> entityClass, T objectEntity, Object primaryKey, String alreadyExistsKey) throws BusinessException {
+    public <T> T create(Class<? extends T> entityClass, T entity, Object primaryKey) throws BusinessException {
 
         // Check that the entity doesn't already exist
         if (primaryKey != null && entityManager.find(entityClass, primaryKey) != null) {
-            String message = messageSource.getMessage(alreadyExistsKey, null, LocaleContextHolder.getLocale());
+            String message = messageSource.getMessage("dao.entity.alreadyExists", null, LocaleContextHolder.getLocale());
             throw new BusinessException(message);
         }
 
-        entityManager.persist(objectEntity);
-        daoPersistLogger.fine(String.format("%s: %s", entityClass.getSimpleName(), objectEntity.toString()));
-        return objectEntity;
+        entityManager.persist(entity);
+        return entity;
     }
 
     /**
-     * Create or update the entity in database
+     * Updates the entity in database
      * @param entityClass
-     * @param objectEntity
-     * @param primaryKey
-     * @param alreadyExistsKey
-     * @return
-     * @throws BusinessException
-     */
-    public <T> T createOrUpdate(T objectEntity) {
-        entityManager.persist(objectEntity);
-        daoPersistLogger.fine(objectEntity.getClass().getSimpleName() + ": " + objectEntity.toString());
-        return objectEntity;
-    }
-
-    /**
-     * Update the entity
-     * @param entityClass
-     * @param objectEntity
+     * @param entity
      * @param primaryKey
      * @return
      * @throws BusinessException
      */
-    public <T> T update(Class<T> entityClass, T objectEntity, Object primaryKey) throws BusinessException {
+    public <T> T update(Class<T> entityClass, T entity, Object primaryKey) throws BusinessException {
 
         // Check that the entity already exist
-        T entity = entityManager.find(entityClass, primaryKey);
-        if (entity == null) {
-            throw new BusinessException("the item has not been found");
+        T source = entityManager.find(entityClass, primaryKey);
+        if (source == null) {
+            String message = messageSource.getMessage("dao.entity.notFound", null, LocaleContextHolder.getLocale());
+            throw new BusinessException(message);
         }
 
-        entityManager.persist(objectEntity);
-        daoPersistLogger.fine(String.format("%s: %s", entityClass.getSimpleName(), objectEntity.toString()));
-        return objectEntity;
+        entityManager.persist(entity);
+        return entity;
     }
 
     /**
-     * Get an entity
+     * Gets an entity from database
      * @param entityClass
      * @param primaryKey
      * @return
      */
     public <T> T get(Class<T> entityClass, Object primaryKey) {
-        T result = entityManager.find(entityClass, primaryKey);
-        Logger.getLogger("dao.get").fine(entityClass.getSimpleName() + ": " + primaryKey);
-        return result;
+        return entityManager.find(entityClass, primaryKey);
+    }
+
+    /**
+     * Deletes the entity in database
+     * @param entityClass
+     * @param primaryKey
+     * @throws BusinessException
+     */
+    public <T> void delete(Class<T> entityClass, Object primaryKey) throws BusinessException {
+
+        // Check that the entity already exist
+        T source = entityManager.find(entityClass, primaryKey);
+        if (source == null) {
+            String message = messageSource.getMessage("dao.entity.notFound", null, LocaleContextHolder.getLocale());
+            throw new BusinessException(message);
+        }
+
+        entityManager.remove(source);
     }
 
     /**
@@ -227,47 +223,6 @@ public class DAOManager {
 
         Logger.getLogger("dao.count").fine(entityClass.getSimpleName() + ": " + params);
         return result;
-    }
-
-    /**
-     * Delete the entity
-     * @param entityClass
-     * @param primaryKey
-     * @throws BusinessException
-     */
-    public <T> void delete(Class<T> entityClass, Object primaryKey) throws BusinessException {
-
-        // Check that the entity already exist
-        T entity = entityManager.find(entityClass, primaryKey);
-        if (entity == null) {
-            throw new BusinessException("User not found");
-        }
-        entityManager.remove(entity);
-        Logger.getLogger("dao.delete").fine(entityClass.getSimpleName() + ": " + primaryKey);
-    }
-
-    public <E> void refresh(E entity) {
-        entityManager.refresh(entity);
-        Logger.getLogger("dao.refresh").fine(entity.getClass().getSimpleName() + ": " + entity.toString());
-    }
-
-    public <T> List<T> getByParentId(Class<T> childrenClass, Object parentId, String parentField) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(childrenClass);
-        Root<T> from = criteriaQuery.from(childrenClass);
-        criteriaQuery.where(criteriaBuilder.equal(from.get(parentField), parentId));
-        CriteriaQuery<T> select = criteriaQuery.select(from);
-        TypedQuery<T> typedQuery = entityManager.createQuery(select);
-        return typedQuery.getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> List<T> find(String nativeQuery, Map<String, Object> params) {
-        Query query = entityManager.createNativeQuery(nativeQuery);
-        for (Entry<String, Object> entry : params.entrySet()) {
-            query.setParameter(entry.getKey(), entry.getValue());
-        }
-        return query.getResultList();
     }
 
 }

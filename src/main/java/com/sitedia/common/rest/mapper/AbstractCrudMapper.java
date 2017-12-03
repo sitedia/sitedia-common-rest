@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sitedia.common.rest.dao.DAOManager;
+import com.sitedia.common.rest.dao.DaoManager;
 import com.sitedia.common.rest.exception.BusinessException;
 import com.sitedia.common.rest.exception.TechnicalException;
 
@@ -27,7 +27,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public abstract class AbstractCrudMapper<C, R, U, E, I> {
 
     @Autowired
-    protected DAOManager daoManager;
+    protected DaoManager daoManager;
 
     protected MapperFactory mapperFactory;
 

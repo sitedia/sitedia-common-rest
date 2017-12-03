@@ -1,17 +1,14 @@
 package com.sitedia.common.rest.controller;
 
-import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -20,83 +17,48 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.sitedia.common.rest.dto.ErrorDTO;
 import com.sitedia.common.rest.exception.BusinessException;
-import com.sitedia.common.rest.exception.TechnicalException;
 
 /**
- * Interceptor for all exceptions in controller
- * @author cedric
- *
+ * First level of errors thrown by controller. At this level we try to reply
+ * with a user-friendly message to the user
+ * 
+ * @author sitedia
  */
 @ControllerAdvice
 public class Level1ErrorController {
 
-    private static final Logger businessLogger = Logger.getLogger("error.Business");
+    private static Logger logger = Logger.getLogger(Level1ErrorController.class.getName());
 
-    private static final Logger applicationLogger = Logger.getLogger("error.Application");
-
-    private static final Logger exceptionLogger = Logger.getLogger("error.Internal");
-
-    private static final Logger authLogger = Logger.getLogger("auth.AccessDenied");
+    @Autowired
+    private MessageSource messageSource;
 
     /**
-     * Business exception
-     * @param ex
-     * @return
+     * Business exceptions, managed by the application. That's why we don't
+     * display stack trace in INFO level
      */
     @ExceptionHandler(value = { BusinessException.class, HttpMessageNotReadableException.class, HttpMediaTypeNotSupportedException.class })
-    public ResponseEntity<ErrorDTO> businessException(Exception e) {
-        businessLogger.info(e.getMessage());
+    public ResponseEntity<ErrorDTO> handleBusinessException(Exception e) {
+
+        // Specific log for monitoring
+        Logger.getLogger("error.Business").info(e.getMessage());
+        logger.log(Level.FINE, e.getMessage(), e);
+
         ErrorDTO error = new ErrorDTO("BUSINESS", e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     /**
-     * Mapping error
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorDTO> businessException(MethodArgumentTypeMismatchException e) {
-        applicationLogger.warning(e.getMessage());
-        ErrorDTO error = new ErrorDTO("MAPPING", e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(value = TechnicalException.class)
-    public ResponseEntity<ErrorDTO> technicalException(TechnicalException e) {
-        exceptionLogger.log(Level.SEVERE, e.getMessage(), e);
-        ErrorDTO error = new ErrorDTO("TECHNICAL", e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    // MethodArgumentNotValidException
-
-    /**
-     * Technical exception
-     * @param ex
-     * @return
-     */
-    @ExceptionHandler(value = { ConstraintViolationException.class })
-    public ResponseEntity<ErrorDTO> handleValidationFailure(ConstraintViolationException ex) {
-        ConstraintViolation<?> violation = ex.getConstraintViolations().iterator().next();
-        ErrorDTO error = new ErrorDTO("CONSTRAINT", violation.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
-    }
-
-    /**
-     * Technical exception
-     * @param ex
-     * @return
+     * Validation exceptions, thrown by controller and DTO checks
      */
     @ExceptionHandler(value = { MethodArgumentNotValidException.class })
-    public ResponseEntity<ErrorDTO> handleArgumentNotValid(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorDTO> handleArgumentNotValidException(MethodArgumentNotValidException e) {
 
-        // Extract default message
-        String message = e.getBindingResult().getFieldError().getDefaultMessage();
+        // Specific log for monitoring
+        Logger.getLogger("error.Business").info(e.getMessage());
+        logger.log(Level.FINE, e.getMessage(), e);
 
         // Extract all errors
         List<ObjectError> objectErrors = e.getBindingResult().getAllErrors();
@@ -105,48 +67,37 @@ public class Level1ErrorController {
             errors.add(error.getDefaultMessage());
         }
 
-        // Return the error
-        businessLogger.info(message);
-        ErrorDTO error = new ErrorDTO("VALIDATION", message, errors);
+        ErrorDTO error = new ErrorDTO("VALIDATION", e.getMessage(), errors);
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     /**
-     * Incorrect credentials
-     * @param ex
-     * @return
+     * Access denied exceptions
      */
     @ExceptionHandler(value = { AccessDeniedException.class })
-    public ResponseEntity<ErrorDTO> handleAccessDenied(AccessDeniedException e) {
-        authLogger.warning(e.getMessage());
-        ErrorDTO error = new ErrorDTO("ACCESS_DENIED", e.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ErrorDTO> handleAccessDeniedException(AccessDeniedException e) {
+
+        // Specific log for monitoring
+        Logger.getLogger("endpoint.AccessDenied").warning(e.getMessage());
+        logger.log(Level.FINE, e.getMessage(), e);
+
+        ErrorDTO error = new ErrorDTO("ACCESS_DENIED", messageSource.getMessage("endpoint.accessDenied", null, LocaleContextHolder.getLocale()));
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     /**
-     * Internal error
-     * @param ex
-     * @return
-     * @throws IOException
+     * Others exceptions. For security reasons, the message is not returned to
+     * the user
      */
-    @ExceptionHandler(value = { Exception.class })
-    public ResponseEntity<ErrorDTO> handleOther(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e)
-            throws IOException {
-        exceptionLogger.log(Level.SEVERE, e.getMessage(), e);
-        ErrorDTO errorDTO = new ErrorDTO("OTHER", "Sorry, an internal error occured.");
-        String path = request.getRequestURI();
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ErrorDTO> handleException(Exception e) {
 
-        if (path.startsWith("/api") || path.contains("/404/") || path.contains("/500/")) {
+        // Specific log for monitoring
+        Logger.getLogger("error.Internal").severe(e.getMessage());
+        logger.log(Level.SEVERE, e.getMessage(), e);
 
-            // API
-            return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
-
-        } else {
-
-            // HTML
-            response.sendRedirect("../500/index.html");
-            return null;
-        }
+        ErrorDTO error = new ErrorDTO("INTERNAL", messageSource.getMessage("endpoint.internalError", null, LocaleContextHolder.getLocale()));
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
