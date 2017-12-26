@@ -48,14 +48,7 @@ public class DaoManager {
      * @return
      * @throws BusinessException
      */
-    public <T> T create(Class<? extends T> entityClass, T entity, Object primaryKey) throws BusinessException {
-
-        // Check that the entity doesn't already exist
-        if (primaryKey != null && entityManager.find(entityClass, primaryKey) != null) {
-            String message = messageSource.getMessage("sitedia.commonRest.dao.entity.alreadyExists", null, LocaleContextHolder.getLocale());
-            throw new BusinessException(message);
-        }
-
+    public <T> T create(Class<? extends T> entityClass, T entity) throws BusinessException {
         entityManager.persist(entity);
         return entity;
     }

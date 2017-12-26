@@ -25,7 +25,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(JsonUtils.toString(new StatusDTO("OK", "Logged in successfully")));
+        response.getWriter().write(JsonUtils.toString(new StatusDTO("OK", "Logged in successfully", null)));
         response.getWriter().flush();
         response.getWriter().close();
     }

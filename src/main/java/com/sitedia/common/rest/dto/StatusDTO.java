@@ -1,5 +1,7 @@
 package com.sitedia.common.rest.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +21,7 @@ public class StatusDTO {
     @ApiModelProperty(notes = "Description")
     private String description;
 
+    @ApiModelProperty(notes = "Errors")
+    private List<String> errors;
+    
 }

@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.sitedia.common.rest.annotation.TransactionalThrowable;
 import com.sitedia.common.rest.dao.DaoManager;
 import com.sitedia.common.rest.dto.ResponseListDTO;
 import com.sitedia.common.rest.exception.BusinessException;
@@ -36,10 +37,10 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @Transactional
+    @TransactionalThrowable
     public R create(C creationDTO) throws BusinessException, TechnicalException {
         E entity = getMapper().fromCreationDTO(creationDTO);
-        E created = daoManager.create(getEntityClass(), entity, getId(creationDTO));
+        E created = daoManager.create(getEntityClass(), entity);
 
         // Perform custom code if necessary
         internalPostCreate(creationDTO, created);
@@ -55,7 +56,7 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @Transactional
+    @TransactionalThrowable
     public R get(I id) throws BusinessException, TechnicalException {
         E entity = daoManager.get(getEntityClass(), id);
         return entity != null ? getMapper().toDTO(entity) : null;
@@ -70,7 +71,7 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @Transactional
+    @TransactionalThrowable
     public R update(U updateDTO, I id) throws BusinessException, TechnicalException {
         E update = getMapper().fromUpdateDTO(updateDTO, id);
         E updated = daoManager.update(getEntityClass(), update, id);
@@ -88,7 +89,7 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @Transactional
+    @TransactionalThrowable
     public void delete(I id) throws BusinessException, TechnicalException {
         daoManager.delete(getEntityClass(), id);
     }
@@ -101,7 +102,7 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @Transactional
+    @TransactionalThrowable
     public ResponseListDTO<R> list(Map<String, Object> params) throws BusinessException, TechnicalException {
 
         // Convert params before filtering
@@ -148,11 +149,5 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
      * @return
      */
     protected abstract AbstractCrudMapper<C, R, U, E, I> getMapper();
-
-    /**
-     * Returns the primary key of the given creationDTO, in order to prevent
-     * duplicates in database
-     */
-    protected abstract I getId(C creationDTO);
 
 }
