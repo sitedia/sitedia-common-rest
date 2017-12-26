@@ -3,7 +3,10 @@ package com.sitedia.common.rest.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 
 import com.sitedia.common.rest.annotation.TransactionalThrowable;
 import com.sitedia.common.rest.dao.DaoManager;
@@ -26,6 +29,12 @@ public abstract class AbstractCrudService<C, R, U, E, I> {
 
     @Autowired
     protected DaoManager daoManager;
+    
+    @Autowired
+    protected EntityManager entityManager;
+
+    @Autowired
+    protected MessageSource messageSource;
 
     /**
      * Creates the entity in database
