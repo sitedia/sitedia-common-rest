@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.sitedia.common.rest.exception.BusinessException;
+import com.sitedia.common.rest.utils.InitializingBean;
 
 /**
  * Common REST starter configuration

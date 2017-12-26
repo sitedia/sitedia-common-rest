@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.configuration;
+package com.sitedia.common.rest.utils;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

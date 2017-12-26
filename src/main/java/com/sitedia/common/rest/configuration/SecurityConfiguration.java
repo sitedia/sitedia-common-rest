@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 
 import com.sitedia.common.rest.utils.CustomAuthenticationSuccessHandler;
+import com.sitedia.common.rest.utils.InitializingBean;
 import com.sitedia.common.rest.utils.Sha512PasswordEncoder;
 
 /**
