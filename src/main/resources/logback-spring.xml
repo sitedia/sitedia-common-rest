@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{HH:mm:ss.SSS} %p %c %msg%n</pattern>
+		</layout>
+	</appender>
+
+	<logger name="com.sitedia" level="info" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="org.springframework.web.servlet.mvc.method.annotation" level="warn" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="org.springframework.web.servlet.handler" level="warn" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="org.hibernate.jpa.internal.util.LogHelper" level="warn" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="org.springframework.security.web" level="warn" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext" level="warn" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="org.springframework.jdbc.datasource.init.ScriptUtils" level="warn" additivity="false">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

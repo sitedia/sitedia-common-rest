@@ -1,22 +1,39 @@
 package com.sitedia.common.rest.configuration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-import com.sitedia.common.rest.exception.BusinessException;
 import com.sitedia.common.rest.utils.InitializingBean;
 
-/**
- * Common REST starter configuration
- * @author sitedia
- *
- */
-@ComponentScan("com.sitedia.common.rest")
+@Configuration
+@ComponentScan(basePackages = "com.sitedia.common.rest")
 public class CommonRestConfiguration {
 
+    @Value("${server.allowed-paths}")
+    private String allowedPaths;
+
+    @Value("${security.auth.server.usersByUsernameQuery}")
+    private String usersByUsernameQuery;
+
+    @Value("${security.auth.server.authoritiesByUsernameQuery}")
+    private String authoritiesByUsernameQuery;
+
+    @Value("${security.salt:}")
+    private String salt;
+
     @Bean
-    public InitializingBean init() throws BusinessException {
-        throw new BusinessException("Initializing bean not found. Please create it before launching the application.");
+    public InitializingBean init() {
+	InitializingBean init = new InitializingBean();
+
+	init.setBasePackage("com.sitedia");
+	init.setAllowedPaths(allowedPaths);
+	init.setUsersByUsernameQuery(usersByUsernameQuery);
+	init.setAuthoritiesByUsernameQuery(authoritiesByUsernameQuery);
+	init.setSalt(salt);
+
+	return init;
     }
 
 }
