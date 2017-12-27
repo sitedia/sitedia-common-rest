@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
-import com.sitedia.common.rest.dto.RoleType;
+import com.sitedia.common.rest.utils.RoleType;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

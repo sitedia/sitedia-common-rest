@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.dto;
+package com.sitedia.common.rest.utils;
 
 /**
  * User roles. Important: Spring requires ROLE_ prefix by default
