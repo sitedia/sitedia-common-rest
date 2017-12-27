@@ -1,7 +1,9 @@
 package com.sitedia.common.rest.utils;
 
 import java.io.IOException;
+import java.util.List;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitedia.common.rest.exception.TechnicalException;
@@ -44,6 +46,23 @@ public final class JsonUtils {
      */
     public static JsonNode toJsonNode(Object value) throws TechnicalException {
         return mapper.valueToTree(value);
+    }
+    
+    /**
+     * Convert a json array to a list
+     * @param json
+     * @param responseClass
+     * @return
+     * @throws TechnicalException
+     */
+    public static <T> List<T> toList(String json) throws TechnicalException {
+        try {
+            TypeReference<List<T>> typeReference = new TypeReference<List<T>>() {
+            };
+            return mapper.readValue(json, typeReference);
+        } catch (IOException e) {
+            throw new TechnicalException(e);
+        }
     }
 
 }
