@@ -31,15 +31,15 @@ public class SessionController {
      */
     @RequestMapping(path = "/api/v1.0/sessions/userInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public Object get(Authentication authentication) throws BusinessException, TechnicalException {
-	if (authentication == null || authentication.getName().equals(ANONYMOUS_USER)) {
-	    throw new BusinessException("Access forbidden");
-	}
-	Object user = defaultUserService.getByUsername(authentication.getName());
-	if (user == null) {
-	    throw new BusinessException("Access forbidden");
-	}
+        if (authentication == null || authentication.getName().equals(ANONYMOUS_USER)) {
+            throw new BusinessException("Access denied");
+        }
+        Object user = defaultUserService.getByUsername(authentication.getName());
+        if (user == null) {
+            throw new BusinessException("Access denied");
+        }
 
-	return user;
+        return user;
     }
 
 }
