@@ -27,17 +27,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author sitedia
  */
 @RestController
-public class Level2ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
+public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
 
     private static final String PATH = "/error";
 
-    private static Logger logger = Logger.getLogger(Level2ErrorController.class.getName());
+    private static Logger logger = Logger.getLogger(ErrorController.class.getName());
 
     @Autowired
     private ErrorAttributes errorAttributes;
 
     /**
      * Returns a simple message to the user
+     * 
      * @param request
      * @param response
      * @return
@@ -46,35 +47,37 @@ public class Level2ErrorController implements org.springframework.boot.autoconfi
     @RequestMapping(value = PATH, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public ResponseEntity<String> error(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
+	try {
 
-            // Extract message
-            RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-            Map<String, Object> errors = errorAttributes.getErrorAttributes(requestAttributes, true);
-            String message = new ObjectMapper().writeValueAsString(errors);
+	    // Extract message
+	    RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+	    Map<String, Object> errors = errorAttributes.getErrorAttributes(requestAttributes, true);
+	    String message = new ObjectMapper().writeValueAsString(errors);
 
-            // Return a basic page with the header
-            if (errors.get("error") != null && errors.get("error").equals("Not Found")) {
-                Logger.getLogger("endpoint.404").info(message);
-                return new ResponseEntity<>("<h1>Forbidden</h1>", HttpStatus.FORBIDDEN);
-            } else {
-                Logger.getLogger("endpoint.critical").severe(message);
-                return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+	    // Return a basic page with the header
+	    if (errors.get("error") != null && errors.get("error").equals("Not Found")) {
+		Logger.getLogger("endpoint.404").info(message);
+		return new ResponseEntity<>("<h1>Forbidden</h1>", HttpStatus.FORBIDDEN);
+	    } else {
+		Logger.getLogger("endpoint.critical").severe(message);
+		return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>",
+			HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 
-        } catch (Exception e) {
+	} catch (Exception e) {
 
-            // Specific log for monitoring
-            Logger.getLogger("error.critical").severe(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
+	    // Specific log for monitoring
+	    Logger.getLogger("error.critical").severe(e.getMessage());
+	    logger.log(Level.SEVERE, e.getMessage(), e);
 
-            return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+	    return new ResponseEntity<>("<h1>Internal server error</h1><h4>Please retry later</h4>",
+		    HttpStatus.INTERNAL_SERVER_ERROR);
+	}
     }
 
     @Override
     public String getErrorPath() {
-        return PATH;
+	return PATH;
     }
 
 }
