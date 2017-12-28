@@ -3,6 +3,7 @@ package com.sitedia.common.rest.configuration;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -12,11 +13,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 
 import com.sitedia.common.rest.utils.CustomAuthenticationSuccessHandler;
-import com.sitedia.common.rest.utils.InitializingBean;
 import com.sitedia.common.rest.utils.Sha512PasswordEncoder;
 
 /**
  * Security configuration
+ * 
  * @author cedric
  *
  */
@@ -26,24 +27,32 @@ import com.sitedia.common.rest.utils.Sha512PasswordEncoder;
 @EnableJdbcHttpSession
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private InitializingBean initializingBean;
+    @Value("${sitedia.security.allowedPaths}")
+    private String allowedPaths;
+
+    @Value("${sitedia.auth.usersByUsernameQuery}")
+    private String usersByUsernameQuery;
+
+    @Value("${sitedia.auth.authoritiesByUsernameQuery}")
+    private String authoritiesByUsernameQuery;
+
+    @Value("${sitedia.auth.salt}")
+    private String salt;
 
     @Autowired
     private DataSource dataSource;
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication().dataSource(dataSource).usersByUsernameQuery(initializingBean.getUsersByUsernameQuery())
-                .authoritiesByUsernameQuery(initializingBean.getAuthoritiesByUsernameQuery())
-                .passwordEncoder(new Sha512PasswordEncoder(initializingBean.getSalt()));
+        auth.jdbcAuthentication().dataSource(dataSource).usersByUsernameQuery(usersByUsernameQuery).authoritiesByUsernameQuery(authoritiesByUsernameQuery)
+                .passwordEncoder(new Sha512PasswordEncoder(salt));
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
 
         // Accept paths on white list
-        http.authorizeRequests().antMatchers(initializingBean.getAllowedPaths().split(",")).permitAll();
+        http.authorizeRequests().antMatchers(allowedPaths.split(",")).permitAll();
         http.authorizeRequests().anyRequest().denyAll();
 
         // Disable frames
@@ -51,8 +60,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.headers().contentTypeOptions().disable();
 
         // Authentification
-        http.formLogin().loginProcessingUrl("/login.html").usernameParameter("username").passwordParameter("password")
-                .successHandler(new CustomAuthenticationSuccessHandler());
+        http.formLogin().loginProcessingUrl("/login.html").usernameParameter("username").passwordParameter("password").successHandler(new CustomAuthenticationSuccessHandler());
         http.logout().logoutUrl("/logout.html").invalidateHttpSession(true).clearAuthentication(true).deleteCookies("SESSION");
 
         // Disable CSRF
