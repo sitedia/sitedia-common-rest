@@ -5,12 +5,14 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import com.sitedia.common.rest.utils.InitializingBean;
 
 @Configuration
 @ComponentScan(basePackages = "com.sitedia.common.rest")
 @EntityScan(basePackages = "com.sitedia.common.rest.entity")
+@PropertySource("classpath:com/sitedia/common/rest/common-rest.properties")
 public class CommonRestConfiguration {
 
     @Value("${server.allowed-paths}")
@@ -27,15 +29,15 @@ public class CommonRestConfiguration {
 
     @Bean
     public InitializingBean init() {
-	InitializingBean init = new InitializingBean();
+        InitializingBean init = new InitializingBean();
 
-	init.setBasePackage("com.sitedia");
-	init.setAllowedPaths(allowedPaths);
-	init.setUsersByUsernameQuery(usersByUsernameQuery);
-	init.setAuthoritiesByUsernameQuery(authoritiesByUsernameQuery);
-	init.setSalt(salt);
+        init.setBasePackage("com.sitedia");
+        init.setAllowedPaths(allowedPaths);
+        init.setUsersByUsernameQuery(usersByUsernameQuery);
+        init.setAuthoritiesByUsernameQuery(authoritiesByUsernameQuery);
+        init.setSalt(salt);
 
-	return init;
+        return init;
     }
 
 }
