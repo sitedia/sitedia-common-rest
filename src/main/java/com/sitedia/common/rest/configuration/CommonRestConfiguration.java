@@ -12,7 +12,7 @@ import com.sitedia.common.rest.utils.InitializingBean;
 @Configuration
 @ComponentScan(basePackages = "com.sitedia.common.rest")
 @EntityScan(basePackages = "com.sitedia.common.rest.entity")
-@PropertySource("classpath:com/sitedia/common/rest/common-rest.properties")
+@PropertySource("classpath:com/sitedia/common/rest/properties/common-rest.properties")
 public class CommonRestConfiguration {
 
     @Value("${server.allowed-paths}")
