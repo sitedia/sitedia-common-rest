@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @ComponentScan(basePackages = "com.sitedia.common.rest")
-@EntityScan(basePackages = "com.sitedia.common.rest.entity")
+@EntityScan(basePackages = "com.sitedia.common.rest.entities")
 @PropertySource("classpath:com/sitedia/common/rest/properties/common-rest.properties")
 public class CommonRestConfiguration {
 
