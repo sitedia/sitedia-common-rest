@@ -1,4 +1,4 @@
-package com.sitedia.creations.server.service;
+package com.sitedia.common.rest.services;
 
 import java.util.Locale;
 import java.util.logging.Level;
