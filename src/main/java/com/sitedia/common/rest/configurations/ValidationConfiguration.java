@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.configuration;
+package com.sitedia.common.rest.configurations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

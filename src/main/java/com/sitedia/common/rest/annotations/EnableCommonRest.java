@@ -5,7 +5,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
-import com.sitedia.common.rest.configuration.CommonRestConfiguration;
+import com.sitedia.common.rest.configurations.CommonRestConfiguration;
 
 /**
  * Indicates that this common REST starter should be enabled.

@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.configuration;
+package com.sitedia.common.rest.configurations;
 
 import javax.sql.DataSource;
 

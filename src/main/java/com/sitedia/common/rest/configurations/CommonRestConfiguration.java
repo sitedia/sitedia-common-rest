@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.configuration;
+package com.sitedia.common.rest.configurations;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
