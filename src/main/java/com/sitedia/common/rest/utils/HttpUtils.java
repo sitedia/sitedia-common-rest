@@ -6,8 +6,11 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
+
 /**
  * HTTP utils for HttpServletRequest and HttpServletResponse
+ * 
  * @author sitedia
  *
  */
@@ -22,6 +25,7 @@ public final class HttpUtils {
 
     /**
      * Extracts parameters from the request
+     * 
      * @param request
      * @return
      */
@@ -29,7 +33,7 @@ public final class HttpUtils {
         Map<String, String[]> map = request.getParameterMap();
         Map<String, Object> result = new HashMap<>();
         for (Entry<String, String[]> entry : map.entrySet()) {
-            result.put(entry.getKey(), entry.getValue()[0]);
+            result.put(entry.getKey(), StringUtils.arrayToCommaDelimitedString(entry.getValue()));
         }
         return result;
     }
