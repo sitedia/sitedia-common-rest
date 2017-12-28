@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.service;
+package com.sitedia.common.rest.services;
 
 import java.util.List;
 import java.util.Map;
@@ -8,12 +8,12 @@ import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
-import com.sitedia.common.rest.annotation.TransactionalThrowable;
+import com.sitedia.common.rest.annotations.TransactionalThrowable;
 import com.sitedia.common.rest.dao.DaoManager;
 import com.sitedia.common.rest.dto.ResponseListDTO;
-import com.sitedia.common.rest.exception.BusinessException;
-import com.sitedia.common.rest.exception.TechnicalException;
-import com.sitedia.common.rest.mapper.AbstractCrudMapper;
+import com.sitedia.common.rest.exceptions.BusinessException;
+import com.sitedia.common.rest.exceptions.TechnicalException;
+import com.sitedia.common.rest.mappers.AbstractCrudMapper;
 
 /**
  * Abstract CRUD service

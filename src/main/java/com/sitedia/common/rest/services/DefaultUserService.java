@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.service;
+package com.sitedia.common.rest.services;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import com.sitedia.common.rest.entity.DefaultUserEntity;
-import com.sitedia.common.rest.exception.BusinessException;
-import com.sitedia.common.rest.exception.TechnicalException;
-import com.sitedia.common.rest.mapper.DefaultUserMapper;
+import com.sitedia.common.rest.entities.DefaultUserEntity;
+import com.sitedia.common.rest.exceptions.BusinessException;
+import com.sitedia.common.rest.exceptions.TechnicalException;
+import com.sitedia.common.rest.mappers.DefaultUserMapper;
 
 /**
  * User service interface for security components

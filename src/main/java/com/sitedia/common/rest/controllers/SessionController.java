@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.controller;
+package com.sitedia.common.rest.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sitedia.common.rest.exception.BusinessException;
-import com.sitedia.common.rest.exception.TechnicalException;
-import com.sitedia.common.rest.service.DefaultUserService;
+import com.sitedia.common.rest.exceptions.BusinessException;
+import com.sitedia.common.rest.exceptions.TechnicalException;
+import com.sitedia.common.rest.services.DefaultUserService;
 
 @RestController
 @RequestMapping(produces = "application/json;charset=UTF-8")

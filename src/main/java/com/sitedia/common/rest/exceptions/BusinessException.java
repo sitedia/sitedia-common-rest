@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.exception;
+package com.sitedia.common.rest.exceptions;
 
 import java.io.IOException;
 

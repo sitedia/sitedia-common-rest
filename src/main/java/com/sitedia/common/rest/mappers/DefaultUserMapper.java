@@ -1,10 +1,10 @@
-package com.sitedia.common.rest.mapper;
+package com.sitedia.common.rest.mappers;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.sitedia.common.rest.dto.DefaultUserDTO;
-import com.sitedia.common.rest.entity.DefaultUserEntity;
+import com.sitedia.common.rest.entities.DefaultUserEntity;
 
 /**
  * User mapper

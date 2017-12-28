@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.sitedia.common.rest.exception.BusinessException;
+import com.sitedia.common.rest.exceptions.BusinessException;
 
 /**
  * DAO tool for developers. It allows performing CRUD operations in database,

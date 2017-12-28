@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.controller;
+package com.sitedia.common.rest.controllers;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.sitedia.common.rest.dto.ResponseListDTO;
-import com.sitedia.common.rest.exception.BusinessException;
-import com.sitedia.common.rest.exception.TechnicalException;
-import com.sitedia.common.rest.service.AbstractCrudService;
+import com.sitedia.common.rest.exceptions.BusinessException;
+import com.sitedia.common.rest.exceptions.TechnicalException;
+import com.sitedia.common.rest.services.AbstractCrudService;
 import com.sitedia.common.rest.utils.HttpUtils;
 
 /**

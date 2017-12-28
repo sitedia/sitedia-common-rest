@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.mapper;
+package com.sitedia.common.rest.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sitedia.common.rest.dao.DaoManager;
-import com.sitedia.common.rest.exception.BusinessException;
-import com.sitedia.common.rest.exception.TechnicalException;
+import com.sitedia.common.rest.exceptions.BusinessException;
+import com.sitedia.common.rest.exceptions.TechnicalException;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;

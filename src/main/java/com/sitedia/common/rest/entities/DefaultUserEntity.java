@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.entity;
+package com.sitedia.common.rest.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

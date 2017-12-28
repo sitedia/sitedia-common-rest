@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.controller;
+package com.sitedia.common.rest.controllers;
 
 import java.io.IOException;
 import java.util.Map;

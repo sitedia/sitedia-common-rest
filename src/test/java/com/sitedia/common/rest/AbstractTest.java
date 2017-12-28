@@ -17,8 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sitedia.common.rest.dao.DaoManager;
 import com.sitedia.common.rest.dto.StatusDTO;
-import com.sitedia.common.rest.exception.RestClientException;
-import com.sitedia.common.rest.exception.TechnicalException;
+import com.sitedia.common.rest.exceptions.RestClientException;
+import com.sitedia.common.rest.exceptions.TechnicalException;
 import com.sitedia.common.rest.utils.RestClient;
 import com.sitedia.common.rest.utils.SecurityFilter;
 

@@ -1,7 +1,7 @@
-package com.sitedia.common.rest.service;
+package com.sitedia.common.rest.services;
 
-import com.sitedia.common.rest.exception.BusinessException;
-import com.sitedia.common.rest.exception.TechnicalException;
+import com.sitedia.common.rest.exceptions.BusinessException;
+import com.sitedia.common.rest.exceptions.TechnicalException;
 
 /**
  * User service interface for security components

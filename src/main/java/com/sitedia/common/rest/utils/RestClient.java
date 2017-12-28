@@ -13,7 +13,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.sitedia.common.rest.exception.RestClientException;
+import com.sitedia.common.rest.exceptions.RestClientException;
 
 
 /**

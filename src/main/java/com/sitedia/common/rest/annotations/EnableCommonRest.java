@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.annotation;
+package com.sitedia.common.rest.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

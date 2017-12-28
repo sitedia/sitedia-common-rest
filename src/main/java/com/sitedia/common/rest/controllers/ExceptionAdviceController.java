@@ -1,4 +1,4 @@
-package com.sitedia.common.rest.controller;
+package com.sitedia.common.rest.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.sitedia.common.rest.dto.StatusDTO;
-import com.sitedia.common.rest.exception.BusinessException;
+import com.sitedia.common.rest.exceptions.BusinessException;
 
 /**
  * First level of errors thrown by controller. At this level we try to reply with a user-friendly message to the user
