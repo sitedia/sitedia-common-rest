@@ -27,11 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author sitedia
  */
 @RestController
-public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
+public class RestErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
 
     private static final String PATH = "/error";
 
-    private static Logger logger = Logger.getLogger(ErrorController.class.getName());
+    private static Logger logger = Logger.getLogger(RestErrorController.class.getName());
 
     @Autowired
     private ErrorAttributes errorAttributes;
