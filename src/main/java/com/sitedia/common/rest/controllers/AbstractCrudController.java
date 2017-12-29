@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,11 +25,16 @@ import com.sitedia.common.rest.utils.HttpUtils;
  * Abstract secured CRUD endpoint for all APIs
  * 
  * @author sitedia
- * @param <C> DTO to use for creation
- * @param <R> DTO to use for read and list
- * @param <U> DTO to use for update
- * @param <E> Entity to use (necessary to specify the service to use)
- * @param <I> Primary key class of the entity
+ * @param <C>
+ *            DTO to use for creation
+ * @param <R>
+ *            DTO to use for read and list
+ * @param <U>
+ *            DTO to use for update
+ * @param <E>
+ *            Entity to use (necessary to specify the service to use)
+ * @param <I>
+ *            Primary key class of the entity
  */
 public abstract class AbstractCrudController<C, R, U, E, I> {
 
@@ -40,9 +46,9 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @PreAuthorize("this.hasCreateAccess(#creationDTO, #request)")
+    @PreAuthorize("this.hasCreateAccess(#creationDTO, #authentication)")
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json;charset=UTF-8")
-    public R create(@RequestBody @Valid @NotNull C creationDTO, HttpServletRequest request) throws BusinessException, TechnicalException {
+    public R create(@RequestBody @Valid @NotNull C creationDTO, Authentication authentication) throws BusinessException, TechnicalException {
         return getService().create(creationDTO);
     }
 
@@ -55,9 +61,9 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @PreAuthorize("this.hasListAccess(#request)")
+    @PreAuthorize("this.hasListAccess(#authentication)")
     @RequestMapping(method = RequestMethod.GET)
-    public List<R> list(HttpServletRequest request, HttpServletResponse response) throws BusinessException, TechnicalException {
+    public List<R> list(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws BusinessException, TechnicalException {
         ResponseListDTO<R> list = getService().list(HttpUtils.getParams(request));
         response.setHeader("X-Total-Count", list.getCount() + "");
         return list.getList();
@@ -71,10 +77,17 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @PreAuthorize("this.hasGetAccess(#id, #request)")
+    @PreAuthorize("this.hasGetAccess(#id, #authentication)")
     @RequestMapping(path = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public R get(@PathVariable @NotNull I id) throws BusinessException, TechnicalException {
-        return getService().get(id);
+    public R get(@PathVariable @NotNull I id, Authentication authentication) throws BusinessException, TechnicalException {
+        R result = getService().get(id);
+
+        // Check that the item exists
+        if (result == null) {
+            throw new BusinessException("Not found");
+        }
+
+        return result;
     }
 
     /**
@@ -86,9 +99,9 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @PreAuthorize("this.hasUpdateAccess(#id, #updateDTO, #request)")
+    @PreAuthorize("this.hasUpdateAccess(#id, #updateDTO, #authentication)")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public R update(@PathVariable @NotNull I id, @RequestBody @Valid @NotNull U updateDTO) throws BusinessException, TechnicalException {
+    public R update(@PathVariable @NotNull I id, @RequestBody @Valid @NotNull U updateDTO, Authentication authentication) throws BusinessException, TechnicalException {
         return getService().update(updateDTO, id);
     }
 
@@ -100,43 +113,47 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws AccessDeniedException
      * @throws TechnicalException
      */
-    @PreAuthorize("this.hasDeleteAccess(#id, #request)")
+    @PreAuthorize("this.hasDeleteAccess(#id, #authentication)")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-    public void delete(@PathVariable @NotNull I id) throws BusinessException, TechnicalException {
+    public void delete(@PathVariable @NotNull I id, Authentication authentication) throws BusinessException, TechnicalException {
         getService().delete(id);
     }
 
     /**
      * Checks if the user has create access
+     * 
      * @param creationDTO
      * @param request
      * @return
      * @throws BusinessException
      * @throws TechnicalException
      */
-    public abstract boolean hasCreateAccess(C creationDTO, HttpServletRequest request) throws BusinessException, TechnicalException;
+    public abstract boolean hasCreateAccess(C creationDTO, Authentication authentication) throws BusinessException, TechnicalException;
 
     /**
      * Checks if the user has list access
+     * 
      * @param request
      * @return
      * @throws BusinessException
      * @throws TechnicalException
      */
-    public abstract boolean hasListAccess(HttpServletRequest request) throws BusinessException, TechnicalException;
+    public abstract boolean hasListAccess(Authentication authentication) throws BusinessException, TechnicalException;
 
     /**
      * Checks if the user has read access
+     * 
      * @param id
      * @param request
      * @return
      * @throws BusinessException
      * @throws TechnicalException
      */
-    public abstract boolean hasGetAccess(I id, HttpServletRequest request) throws BusinessException, TechnicalException;
+    public abstract boolean hasGetAccess(I id, Authentication authentication) throws BusinessException, TechnicalException;
 
     /**
      * Checks if the user has update access
+     * 
      * @param id
      * @param updateDTO
      * @param request
@@ -144,20 +161,22 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    public abstract boolean hasUpdateAccess(I id, U updateDTO, HttpServletRequest request) throws BusinessException, TechnicalException;
+    public abstract boolean hasUpdateAccess(I id, U updateDTO, Authentication authentication) throws BusinessException, TechnicalException;
 
     /**
      * Checks if the user has delete access
+     * 
      * @param id
      * @param request
      * @return
      * @throws BusinessException
      * @throws TechnicalException
      */
-    public abstract boolean hasDeleteAccess(I id, HttpServletRequest request) throws BusinessException, TechnicalException;
+    public abstract boolean hasDeleteAccess(I id, Authentication authentication) throws BusinessException, TechnicalException;
 
     /**
      * Sets the service to be used by the endpoint
+     * 
      * @return
      */
     protected abstract AbstractCrudService<C, R, U, E, I> getService();

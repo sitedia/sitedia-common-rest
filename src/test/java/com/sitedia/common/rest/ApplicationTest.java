@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import com.sitedia.common.rest.annotations.EnableCommonRest;
+
 /**
  * Application launcher
  * 
@@ -11,32 +13,33 @@ import org.springframework.context.ConfigurableApplicationContext;
  *
  */
 @SpringBootApplication
+@EnableCommonRest
 public class ApplicationTest {
 
-	private static ConfigurableApplicationContext applicationContext;
+    private static ConfigurableApplicationContext applicationContext;
 
-	/**
-	 * Private constructor
-	 */
-	protected ApplicationTest() {
-		super();
-	}
+    /**
+     * Private constructor
+     */
+    protected ApplicationTest() {
+        super();
+    }
 
-	/**
-	 * Launcher
-	 * 
-	 * @param args
-	 *            input parameters
-	 */
-	public static void main(String[] args) {
-		applicationContext = SpringApplication.run(ApplicationTest.class, args);
-	}
+    /**
+     * Launcher
+     * 
+     * @param args
+     *            input parameters
+     */
+    public static void main(String[] args) {
+        applicationContext = SpringApplication.run(ApplicationTest.class, args);
+    }
 
-	/**
-	 * Stops the application
-	 */
-	public static void close() {
-		applicationContext.close();
-	}
+    /**
+     * Stops the application
+     */
+    public static void close() {
+        applicationContext.close();
+    }
 
 }

@@ -5,14 +5,11 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sitedia.common.rest.dao.DaoManager;
@@ -20,12 +17,9 @@ import com.sitedia.common.rest.dto.StatusDTO;
 import com.sitedia.common.rest.exceptions.RestClientException;
 import com.sitedia.common.rest.exceptions.TechnicalException;
 import com.sitedia.common.rest.utils.RestClient;
-import com.sitedia.common.rest.utils.SecurityFilter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ApplicationTest.class, webEnvironment = WebEnvironment.DEFINED_PORT)
-@Sql(scripts = "/sql/truncate.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/sql/02_init.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class AbstractTest {
 
     private static final String FUZZING_TEXT_1 = "-)èçç_è)ç_=)àç687576\\@^@\\]\\^|";
@@ -37,12 +31,8 @@ public abstract class AbstractTest {
     @Autowired
     Environment environment;
 
-    @Value("${server.port}")
+    @Value("${server.port:8090}")
     protected String serverPort;
-
-    @Autowired
-    @Qualifier("simpleCorsFilter")
-    private SecurityFilter simpleCorsFilter;
 
     @Autowired
     protected DaoManager daoManager;
@@ -87,7 +77,7 @@ public abstract class AbstractTest {
 
     protected String login(String username, String password, Integer expectedStatus) throws Exception {
         String form = "username=" + username + "&password=" + password;
-        return restClient.login("http://localhost:" + serverPort + "//login.html", form, expectedStatus);
+        return restClient.login("http://localhost:" + serverPort + "/login.html", form, expectedStatus);
     }
 
     protected <T> int countInDatabase(Class<T> entityClass) {

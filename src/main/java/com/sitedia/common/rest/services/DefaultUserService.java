@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import com.sitedia.common.rest.annotations.TransactionalThrowable;
 import com.sitedia.common.rest.entities.DefaultUserEntity;
 import com.sitedia.common.rest.exceptions.BusinessException;
 import com.sitedia.common.rest.exceptions.TechnicalException;
@@ -41,15 +42,16 @@ public class DefaultUserService implements IUserService {
      * @throws TechnicalException
      */
     @Override
+    @TransactionalThrowable
     public Object getByUsername(String username) throws BusinessException, TechnicalException {
-	Query query = entityManager.createNamedQuery("user.getByMail");
-	query.setParameter("mail", username);
-	try {
-	    return mapper.toDTO((DefaultUserEntity) query.getSingleResult());
-	} catch (NoResultException e) {
-	    Logger.getLogger(getClass().getName()).log(Level.FINE, e.getMessage(), e);
-	    return null;
-	}
+        Query query = entityManager.createNamedQuery("user.getByMail");
+        query.setParameter("mail", username);
+        try {
+            return mapper.toDTO((DefaultUserEntity) query.getSingleResult());
+        } catch (NoResultException e) {
+            Logger.getLogger(getClass().getName()).log(Level.FINE, e.getMessage(), e);
+            return null;
+        }
     }
 
 }

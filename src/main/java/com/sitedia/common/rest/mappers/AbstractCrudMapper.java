@@ -18,11 +18,16 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
  * 
  * @author sitedia
  *
- * @param <C> DTO to use for creation
- * @param <R> DTO to use for read and list
- * @param <U> DTO to use for update
- * @param <E> Entity to use (necessary to specify the service to use)
- * @param <I> Primary key class of the entity
+ * @param <C>
+ *            DTO to use for creation
+ * @param <R>
+ *            DTO to use for read and list
+ * @param <U>
+ *            DTO to use for update
+ * @param <E>
+ *            Entity to use (necessary to specify the service to use)
+ * @param <I>
+ *            Primary key class of the entity
  */
 public abstract class AbstractCrudMapper<C, R, U, E, I> {
 
@@ -84,6 +89,9 @@ public abstract class AbstractCrudMapper<C, R, U, E, I> {
      */
     public E fromUpdateDTO(U updateDTO, I id) throws BusinessException, TechnicalException {
         E entity = daoManager.get(getEntityClass(), id);
+        if (entity == null) {
+            throw new BusinessException("Not found");
+        }
         mapperFactory.getMapperFacade().map(updateDTO, entity);
         return entity;
     }
@@ -105,8 +113,8 @@ public abstract class AbstractCrudMapper<C, R, U, E, I> {
     }
 
     /**
-     * Apply conversions on the request parameters: Class changes, n-n relations
-     * management, ...
+     * Apply conversions on the request parameters: Class changes, n-n relations management, ...
+     * 
      * @param params
      * @return
      */
@@ -116,24 +124,28 @@ public abstract class AbstractCrudMapper<C, R, U, E, I> {
 
     /**
      * Return the DTO class for creation
+     * 
      * @return
      */
     protected abstract Class<C> getCreationDTOClass();
 
     /**
      * Return the DTO class for read and list
+     * 
      * @return
      */
     protected abstract Class<R> getDTOClass();
 
     /**
      * Return the DTO class for update
+     * 
      * @return
      */
     protected abstract Class<U> getUpdateDTOClass();
 
     /**
      * Return the entity class for mapping
+     * 
      * @return
      */
     protected abstract Class<E> getEntityClass();
