@@ -61,7 +61,7 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    @PreAuthorize("this.hasListAccess(#authentication)")
+    @PreAuthorize("this.hasListAccess(#request, #authentication)")
     @RequestMapping(method = RequestMethod.GET)
     public List<R> list(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws BusinessException, TechnicalException {
         ResponseListDTO<R> list = getService().list(HttpUtils.getParams(request));
@@ -138,7 +138,7 @@ public abstract class AbstractCrudController<C, R, U, E, I> {
      * @throws BusinessException
      * @throws TechnicalException
      */
-    public abstract boolean hasListAccess(Authentication authentication) throws BusinessException, TechnicalException;
+    public abstract boolean hasListAccess(HttpServletRequest request, Authentication authentication) throws BusinessException, TechnicalException;
 
     /**
      * Checks if the user has read access

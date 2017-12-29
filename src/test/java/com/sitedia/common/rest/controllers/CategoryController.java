@@ -1,5 +1,7 @@
 package com.sitedia.common.rest.controllers;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
@@ -40,7 +42,7 @@ public class CategoryController extends AbstractCrudController<CategoryCreationD
     }
 
     @Override
-    public boolean hasListAccess(Authentication authentication) throws BusinessException, TechnicalException {
+    public boolean hasListAccess(HttpServletRequest request, Authentication authentication) throws BusinessException, TechnicalException {
         return isAdmin(authentication);
     }
 
