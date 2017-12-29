@@ -38,57 +38,36 @@ public class SecurityFilter implements Filter {
      * Applies security filter
      */
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-	    throws IOException, ServletException {
-	HttpServletResponse response = (HttpServletResponse) res;
-	HttpServletRequest request = (HttpServletRequest) req;
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        HttpServletResponse response = (HttpServletResponse) res;
+        HttpServletRequest request = (HttpServletRequest) req;
 
-	// Set response headers
-	response.setHeader("Access-Control-Allow-Origin", allowOrigin);
-	response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
-	response.setHeader("Access-Control-Allow-Credentials", "true");
-	response.setHeader("Access-Control-Max-Age", "3600");
-	response.setHeader("Access-Control-Allow-Headers", "x-total-count, Set-Cookie");
-	response.setHeader("Access-Control-Expose-Headers", "x-total-count, Set-Cookie");
+        // Set response headers
+        response.setHeader("Access-Control-Allow-Origin", allowOrigin);
+        response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "x-total-count, Set-Cookie");
+        response.setHeader("Access-Control-Expose-Headers", "x-total-count, Set-Cookie");
 
-	if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-	    response.setStatus(HttpServletResponse.SC_OK);
-	} else {
-	    chain.doFilter(req, res);
-	}
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            chain.doFilter(req, res);
+        }
 
-	// Log access
-	logAccess(response, request);
-    }
-
-    private void logAccess(HttpServletResponse response, HttpServletRequest request) {
-	int responseStatus = response.getStatus();
-	String incomingRequest = request.getMethod() + " " + request.getRequestURL() + " => " + responseStatus;
-	Integer responseType = responseStatus / 100;
-
-	switch (responseType) {
-	case 2:
-	    Logger.getLogger("endpoint.success").info(incomingRequest);
-	    break;
-	case 3:
-	    Logger.getLogger("endpoint.redirect").info(incomingRequest);
-	    break;
-	case 4:
-	    Logger.getLogger("endpoint.warning").info(incomingRequest);
-	    break;
-	default:
-	    Logger.getLogger("endpoint.error").info(incomingRequest);
-	}
+        // Log access
+        Logger.getLogger("security.request").info(request.getMethod() + " " + request.getRequestURL() + " => " + response.getStatus());
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-	// Nothing to do
+        // Nothing to do
     }
 
     @Override
     public void destroy() {
-	// Nothing to do
+        // Nothing to do
     }
 
 }

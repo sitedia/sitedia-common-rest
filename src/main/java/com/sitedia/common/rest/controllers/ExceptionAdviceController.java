@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.ObjectError;
@@ -75,8 +76,8 @@ public class ExceptionAdviceController {
     /**
      * Access denied exceptions
      */
-    @ExceptionHandler(value = { AccessDeniedException.class })
-    public ResponseEntity<StatusDTO> handleAccessDeniedException(AccessDeniedException e) {
+    @ExceptionHandler(value = { AccessDeniedException.class, BadCredentialsException.class })
+    public ResponseEntity<StatusDTO> handleAccessDeniedException(Exception e) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean authenticated = authentication.getName() != null && !authentication.getName().equals("anonymousUser");
 

@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 
+import com.sitedia.common.rest.utils.CustomAuthenticationFailureHandler;
 import com.sitedia.common.rest.utils.CustomAuthenticationSuccessHandler;
 import com.sitedia.common.rest.utils.Sha512PasswordEncoder;
 
@@ -60,7 +61,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.headers().contentTypeOptions().disable();
 
         // Authentification
-        http.formLogin().loginProcessingUrl("/login.html").usernameParameter("username").passwordParameter("password").successHandler(new CustomAuthenticationSuccessHandler());
+        http.formLogin().loginProcessingUrl("/login.html").usernameParameter("username").passwordParameter("password");
+        http.formLogin().successHandler(new CustomAuthenticationSuccessHandler()).failureHandler(new CustomAuthenticationFailureHandler());
         http.logout().logoutUrl("/logout.html").invalidateHttpSession(true).clearAuthentication(true).deleteCookies("SESSION");
 
         // Disable CSRF
