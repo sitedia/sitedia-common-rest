@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Security filter
+ * 
  * @author cedric
  *
  */
@@ -29,7 +30,8 @@ public class SecurityFilter implements Filter {
     /**
      * Web browsers requires the exact host of the server
      */
-    @Value("${application.allowOrigin}")
+    // FIXME
+    @Value("${application.allowOrigin:}")
     private String allowOrigin;
 
     /**
@@ -55,27 +57,7 @@ public class SecurityFilter implements Filter {
         }
 
         // Log access
-        logAccess(response, request);
-    }
-
-    private void logAccess(HttpServletResponse response, HttpServletRequest request) {
-        int responseStatus = response.getStatus();
-        String incomingRequest = request.getMethod() + " " + request.getRequestURL() + " => " + responseStatus;
-        Integer responseType = responseStatus / 100;
-
-        switch (responseType) {
-        case 2:
-            Logger.getLogger("endpoint.success").info(incomingRequest);
-            break;
-        case 3:
-            Logger.getLogger("endpoint.redirect").info(incomingRequest);
-            break;
-        case 4:
-            Logger.getLogger("endpoint.warning").info(incomingRequest);
-            break;
-        default:
-            Logger.getLogger("endpoint.error").info(incomingRequest);
-        }
+        Logger.getLogger("security.request").info(request.getMethod() + " " + request.getRequestURL() + " => " + response.getStatus());
     }
 
     @Override
